@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00bd730c2a07471da964858360b46b89, type: 3}
+  m_Name: GameSet
+  m_EditorClassIdentifier: 
+  minCards: 4
+  maxCards: 6
+  minParamValue: 1
+  maxParamValue: 6
+  titles:
+  - Dragon
+  - Shmagon
+  - Sladon
+  descriptions:
+  - Very unic but veak.
+  - Make loud roar.
+  - Smels bed.
+  - Has very sharp fangs. Can not fly.
+  - Once he's seen you crying. Told nobody.
+  cardPrefab: {fileID: 3924614858686011773, guid: 11f1ab92b5d5645c98022341d456ad37, type: 3}
