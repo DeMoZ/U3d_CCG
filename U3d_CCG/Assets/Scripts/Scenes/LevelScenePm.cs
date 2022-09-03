@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Configs;
 using Data;
+using DG.Tweening;
 using UniRx;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -18,13 +18,18 @@ public class LevelScenePm : IDisposable
         public List<Sprite> sprites;
         public List<CardEntity> cards;
         public ReactiveCommand onClickRandomButton;
-        public ReactiveCommand<List<CardEntity>> onRemoveCards;
-        public ReactiveCommand onCompactCards;
+        
+        public ReactiveProperty<Vector3> spawnPosition;
+        public ReactiveProperty<Vector3> linePosition;
+        public ReactiveProperty<RectTransform> dropArea;
+        public ReactiveProperty<Transform> cardsParent;
+        public ReactiveCommand onInstantiateCards;
     }
 
     private Ctx _ctx;
     private CompositeDisposable _disposables;
     private bool isChanging;
+    private ReactiveCommand<int> _onCardReturn;
 
     public LevelScenePm(Ctx ctx)
     {
@@ -33,7 +38,11 @@ public class LevelScenePm : IDisposable
 
         _ctx.onClickMenuButton.Subscribe(_ => { _ctx.onSwitchScene.Execute(GameScenes.Menu); }).AddTo(_disposables);
         _ctx.onClickRandomButton.Subscribe(_ => OnClickRandomButton()).AddTo(_disposables);
+        _ctx.onInstantiateCards.Subscribe(_ => OnInstantiateCards()).AddTo(_disposables);
 
+        _onCardReturn = new ReactiveCommand<int>();
+        _onCardReturn.Subscribe(OnCardReturn).AddTo(_disposables);
+        
         CreateCards();
         Debug.Log($"[{this}] constructor finished");
     }
@@ -52,7 +61,8 @@ public class LevelScenePm : IDisposable
                     new() {type = ParamTypes.Mana, value = _ctx.gameSet.GetRandomParamValue()},
                     new() {type = ParamTypes.Power, value = _ctx.gameSet.GetRandomParamValue()},
                     new() {type = ParamTypes.Health, value = _ctx.gameSet.GetRandomParamValue()},
-                }
+                },
+                index = new ReactiveProperty<int>(i),
             };
 
             _ctx.cards.Add(card);
@@ -84,19 +94,107 @@ public class LevelScenePm : IDisposable
             }
         }
 
+        for (var i = 0; i < _ctx.cards.Count; i++)
+            _ctx.cards[i].index.Value = i;
+
         await Task.Delay((int) (_ctx.gameSet.paramChangeDuration * 1000));
 
         if (toRemove.Count > 0)
         {
-            _ctx.onRemoveCards.Execute(toRemove);
-            await Task.Delay((int) (_ctx.gameSet.cardRemoveDuration * 1000));
-            _ctx.onCompactCards.Execute();
-            await Task.Delay((int) (_ctx.gameSet.cardCompactDuration * 1000));
+            await RemoveCards(toRemove);
+            await OnCompactCards();
         }
 
         isChanging = false;
     }
 
+    private void OnInstantiateCards()
+    {
+        for (var i = 0; i < _ctx.cards.Count; i++)
+        {
+            var card = _ctx.cards[i];
+            var cView = UnityEngine.MonoBehaviour.Instantiate(_ctx.gameSet.cardPrefab, _ctx.cardsParent.Value);
+            cView.transform.position = _ctx.spawnPosition.Value;
+
+            cView.SetCtx(new CardView.Ctx
+            {
+                sprite = card.sprite,
+                values = card.parameters,
+                title = card.title,
+                description = card.description,
+                changeDuration = _ctx.gameSet.paramChangeDuration,
+                index = card.index,
+                onCardReturn = _onCardReturn,
+                dropArea = _ctx.dropArea.Value,
+            });
+
+            card.view = cView;
+        }
+
+        ArrangeCards();
+    }
+
+    private async void ArrangeCards()
+    {
+        var distance = Vector3.Distance(_ctx.linePosition.Value, _ctx.spawnPosition.Value);
+        var amount = (float) _ctx.gameSet.GetCardsAmount();
+        var step = 60 / amount;
+        step = Mathf.Clamp(step, 0, 10);
+        var half = (step * amount - step) / 2;
+
+        for (var i = 0; i < _ctx.cards.Count; i++)
+        {
+            var card = _ctx.cards[i].view.transform;
+            var direction = Quaternion.Euler(0, 0, half - step * i) * Vector3.up;
+
+            var position = _ctx.spawnPosition.Value + direction * distance;
+            _ctx.cards[i].position = position;
+            card.rotation = Quaternion.Euler(0, 0, half - step * i) * card.rotation;
+            card.DOMove(position, _ctx.gameSet.cardAppearDuration);
+            await Task.Delay((int) (_ctx.gameSet.cardAppearDuration / 5 * 1000));
+        }
+    }
+
+    private async Task RemoveCards(List<CardEntity> cards)
+    {
+        foreach (var card in cards)
+        {
+            var view = card.view.transform;
+            view.DOMove(_ctx.spawnPosition.Value, _ctx.gameSet.cardRemoveDuration);
+        }
+
+        await Task.Delay((int) (_ctx.gameSet.cardRemoveDuration * 1000));
+    }
+
+    private async Task OnCompactCards()
+    {
+        var distance = Vector3.Distance(_ctx.linePosition.Value, _ctx.spawnPosition.Value);
+        var amount = (float) _ctx.cards.Count;
+        var step = 60 / amount;
+        step = Mathf.Clamp(step, 0, 10);
+        var half = (step * amount - step) / 2;
+
+        for (var i = 0; i < _ctx.cards.Count; i++)
+        {
+            var card = _ctx.cards[i].view.transform;
+            var direction = Quaternion.Euler(0, 0, half - step * i) * Vector3.up;
+
+            var position = _ctx.spawnPosition.Value + direction * distance;
+            _ctx.cards[i].position = position;
+            var rotation = Quaternion.Euler(0, 0, half - step * i) * Quaternion.identity;
+            card.DOMove(position, _ctx.gameSet.cardCompactDuration);
+            card.DORotate(rotation.eulerAngles, _ctx.gameSet.cardCompactDuration);
+        }
+
+        await Task.Delay((int) (_ctx.gameSet.cardCompactDuration * 1000));
+    }
+
+    private void OnCardReturn(int index)
+    {
+        var card = _ctx.cards[index];
+        card.view.transform.DOMove(card.position, _ctx.gameSet.cardReturnDuration);
+    }
+    
     public void Dispose()
     {
         _disposables.Dispose();

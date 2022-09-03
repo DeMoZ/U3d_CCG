@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UniRx;
 using UnityEngine;
 
 namespace Data
@@ -10,5 +11,7 @@ namespace Data
         public Sprite sprite;
         public string title;
         public string description;
+        public Vector3 position;
+        public ReactiveProperty<int> index;
     }
 }

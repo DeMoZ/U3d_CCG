@@ -29,6 +29,7 @@ namespace Data
             catch (Exception e)
             {
                 // ignored
+                Debug.LogError(e);
                 return null;
             }
         }

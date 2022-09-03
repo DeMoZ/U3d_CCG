@@ -165,6 +165,8 @@ GameObject:
   - component: {fileID: 3924614858686011775}
   - component: {fileID: 3924614858686011774}
   - component: {fileID: 3924614858686011773}
+  - component: {fileID: 8042328357480072556}
+  - component: {fileID: 7125452064460400549}
   m_Layer: 5
   m_Name: Card
   m_TagString: Untagged
@@ -250,6 +252,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c21dcfb0e51643729f06d41d1196c84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  canvas: {fileID: 8042328357480072556}
   cardImage: {fileID: 3924614859981751573}
   glow: {fileID: 3924614858092425247}
   glowImage: {fileID: 3924614858092425217}
@@ -259,6 +262,44 @@ MonoBehaviour:
   - {fileID: 4864928250138125298}
   - {fileID: 6482727844864761078}
   - {fileID: 6482727845265892040}
+--- !u!223 &8042328357480072556
+Canvas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3924614858686011771}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_RenderMode: 2
+  m_Camera: {fileID: 0}
+  m_PlaneDistance: 100
+  m_PixelPerfect: 0
+  m_ReceivesEvents: 1
+  m_OverrideSorting: 1
+  m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
+  m_AdditionalShaderChannelsFlag: 25
+  m_SortingLayerID: 0
+  m_SortingOrder: 0
+  m_TargetDisplay: 0
+--- !u!114 &7125452064460400549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3924614858686011771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreReversedGraphics: 1
+  m_BlockingObjects: 0
+  m_BlockingMask:
+    serializedVersion: 2
+    m_Bits: 55
 --- !u!1 &3924614859544486674
 GameObject:
   m_ObjectHideFlags: 0

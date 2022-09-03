@@ -56,8 +56,11 @@ public class LevelSceneEntity : IGameScene
 
         var onClickMenuButton = new ReactiveCommand().AddTo(_disposables);
         var onClickRandomButton = new ReactiveCommand().AddTo(_disposables);
-        var onRemoveCards = new ReactiveCommand<List<CardEntity>>().AddTo(_disposables);
-        var onCompactCards = new ReactiveCommand().AddTo(_disposables);
+        var spawnPosition = new ReactiveProperty<Vector3>().AddTo(_disposables);
+        var linePosition = new ReactiveProperty<Vector3>().AddTo(_disposables);
+        var dropArea = new ReactiveProperty<RectTransform>().AddTo(_disposables);
+        var cardsParent = new ReactiveProperty<Transform>().AddTo(_disposables);
+        var onInstantiateCards = new ReactiveCommand().AddTo(_disposables);
 
         var cards = new List<CardEntity>();
         var scenePm = new LevelScenePm(new LevelScenePm.Ctx
@@ -68,20 +71,24 @@ public class LevelSceneEntity : IGameScene
             gameSet = _gameSet,
             sprites = _sprites,
             cards = cards,
-            onRemoveCards = onRemoveCards,
-            onCompactCards = onCompactCards,
+            spawnPosition = spawnPosition,
+            linePosition = linePosition,
+            dropArea = dropArea,
+            cardsParent = cardsParent,
+            onInstantiateCards = onInstantiateCards,
         }).AddTo(_disposables);
 
         _ui.SetCtx(new UiLevelScene.Ctx
         {
             onClickMenuButton = onClickMenuButton,
             onClickRandomButton = onClickRandomButton,
-            pool = uiPool,
-            cards = cards,
-            gameSet = _gameSet,
-            onRemoveCards = onRemoveCards,
-            onCompactCards = onCompactCards,
+            spawnPosition = spawnPosition,
+            linePosition = linePosition,
+            dropArea = dropArea,
+            cardsParent = cardsParent,
         });
+
+        onInstantiateCards.Execute();
     }
 
     public void Exit()
