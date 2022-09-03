@@ -16,6 +16,13 @@ MonoBehaviour:
   maxCards: 6
   minParamValue: 1
   maxParamValue: 6
+  minChangeValue: -2
+  maxChangeValue: 9
+  cardPrefab: {fileID: 3924614858686011773, guid: 11f1ab92b5d5645c98022341d456ad37, type: 3}
+  paramChangeDuration: 0.6
+  cardAppearDuration: 0.4
+  cardRemoveDuration: 0.3
+  cardCompactDuration: 0.5
   titles:
   - Dragon
   - Shmagon
@@ -26,4 +33,3 @@ MonoBehaviour:
   - Smels bed.
   - Has very sharp fangs. Can not fly.
   - Once he's seen you crying. Told nobody.
-  cardPrefab: {fileID: 3924614858686011773, guid: 11f1ab92b5d5645c98022341d456ad37, type: 3}

@@ -21,7 +21,7 @@ public class LevelSceneEntity : IGameScene
     private ImageLoader _imageLoader;
     private ImageHandler _imageHandler;
     private GameSet _gameSet;
-    
+
     public LevelSceneEntity(Ctx ctx)
     {
         _ctx = ctx;
@@ -30,7 +30,7 @@ public class LevelSceneEntity : IGameScene
         _imageLoader = new ImageLoader(@"https://picsum.photos/200");
         _imageHandler = new ImageHandler(_imageLoader);
         _gameSet = Resources.Load<GameSet>("GameSet");
-        
+
         AsyncOperations();
     }
 
@@ -55,26 +55,33 @@ public class LevelSceneEntity : IGameScene
         var uiPool = new Pool(new GameObject("uiPool").transform);
 
         var onClickMenuButton = new ReactiveCommand().AddTo(_disposables);
+        var onClickRandomButton = new ReactiveCommand().AddTo(_disposables);
+        var onRemoveCards = new ReactiveCommand<List<CardEntity>>().AddTo(_disposables);
+        var onCompactCards = new ReactiveCommand().AddTo(_disposables);
 
         var cards = new List<CardEntity>();
         var scenePm = new LevelScenePm(new LevelScenePm.Ctx
         {
             onSwitchScene = _ctx.onSwitchScene,
             onClickMenuButton = onClickMenuButton,
+            onClickRandomButton = onClickRandomButton,
             gameSet = _gameSet,
             sprites = _sprites,
-            cards = cards
+            cards = cards,
+            onRemoveCards = onRemoveCards,
+            onCompactCards = onCompactCards,
         }).AddTo(_disposables);
 
         _ui.SetCtx(new UiLevelScene.Ctx
         {
             onClickMenuButton = onClickMenuButton,
+            onClickRandomButton = onClickRandomButton,
             pool = uiPool,
             cards = cards,
             gameSet = _gameSet,
+            onRemoveCards = onRemoveCards,
+            onCompactCards = onCompactCards,
         });
-
-        
     }
 
     public void Exit()

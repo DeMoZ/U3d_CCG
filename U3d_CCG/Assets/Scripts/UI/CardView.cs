@@ -15,6 +15,7 @@ public class CardView : MonoBehaviour
         public string title;
         public string description;
         public List<CardValue> values;
+        public float changeDuration;
     }
 
     [SerializeField] private Image cardImage = null;
@@ -48,13 +49,13 @@ public class CardView : MonoBehaviour
         }
     }
 
-    private void OnChangeCardParam(ParamTypes param, int oldValue, int newValue)
+    public void ChangeCardParam(ParamTypes param, int oldValue, int newValue)
     {
         var cardParameter = cardParameters.FirstOrDefault(p => p.GetType == param);
 
         int value = oldValue;
 
-        DOTween.To(() => value, x => value = x, newValue, 5)
+        DOTween.To(() => value, x => value = x, newValue, _ctx.changeDuration)
             .OnUpdate(() => { cardParameter.SetValue(value); });
     }
 
