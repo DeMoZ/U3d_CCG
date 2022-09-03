@@ -82,6 +82,13 @@ public class CardView : MonoBehaviour
     
     private void OnDeselect()
     {
+
+        if (_glowRoutine != null)
+        {
+            StopCoroutine(_glowRoutine);
+            _glowRoutine = null;
+        }
+
         glow.SetActive(false);
     }
 }

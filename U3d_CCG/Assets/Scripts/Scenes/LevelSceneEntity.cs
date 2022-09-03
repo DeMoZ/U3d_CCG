@@ -46,6 +46,8 @@ public class LevelSceneEntity : IGameScene
 
     public void Enter()
     {
+        Debug.Log("[LevelSceneEntity] Entered");
+
         // todo here would be nice to show in level loading screen till the start instantiation finished..
         // todo better load prefab from resources or addressables
         _ui = UnityEngine.GameObject.FindObjectOfType<UiLevelScene>();
@@ -72,7 +74,7 @@ public class LevelSceneEntity : IGameScene
             gameSet = _gameSet,
         });
 
-        Debug.Log("[LevelSceneEntity] Entered");
+        
     }
 
     public void Exit()
